@@ -1,0 +1,1588 @@
+{
+  "contractName": "PricingStrategyInterface",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "allowedAddresses",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "name": "_allow",
+          "type": "bool"
+        }
+      ],
+      "name": "allowAddress",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "discount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "oneTokenInWei",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_updatedFrom",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "_oneTokenInWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenPriceInWeiUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "_updatedFrom",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "_discount",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenDiscountUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipRenounced",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isPricingStrategy",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "name": "_decimals",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculatePrice",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_oneTokenInWei",
+          "type": "uint256"
+        }
+      ],
+      "name": "setTokenPriceInWei",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_discountPercents",
+          "type": "uint256"
+        }
+      ],
+      "name": "setTokenDiscount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.4.23;\n\nimport \"openzeppelin-solidity/contracts/math/SafeMath.sol\";\nimport \"./AllowedAddresses.sol\";\n\n\ncontract PricingStrategyInterface is AllowedAddresses {\n    using SafeMath for uint256;\n\n    /* How many weis one token costs */\n    uint256 public oneTokenInWei;\n    /* Current discount in percents */\n    uint256 public discount;\n\n\n    event TokenPriceInWeiUpdated(address _updatedFrom, uint256 _oneTokenInWei);\n    event TokenDiscountUpdated(address _updatedFrom, uint256 _discount);\n\n    function isPricingStrategy() public pure returns (bool) {\n        return true;\n    }\n\n    /**\n      @notice Calculate tokens amount for ether sent according to oneTokenInWei value\n      @param _value Count of ether sent.\n      @param _decimals Decimals of the token\n     */\n    function calculatePrice(uint256 _value, uint256 _decimals) public view returns (uint256);\n\n    /**\n      @notice Update token price in wei\n      @param _oneTokenInWei New price\n     */\n    function setTokenPriceInWei(uint256 _oneTokenInWei) public returns (bool);\n\n    /**\n      @notice Update current discount percentage\n      @param _discountPercents New discount in percents\n    */\n    function setTokenDiscount(uint256 _discountPercents) public returns (bool);\n}\n",
+  "sourcePath": "/home/kostya/IdeaProjects/Peloton-SmartContracts/contracts/interfaces/PricingStrategyInterface.sol",
+  "ast": {
+    "absolutePath": "/home/kostya/IdeaProjects/Peloton-SmartContracts/contracts/interfaces/PricingStrategyInterface.sol",
+    "exportedSymbols": {
+      "PricingStrategyInterface": [
+        1175
+      ]
+    },
+    "id": 1176,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1120,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:3"
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/math/SafeMath.sol",
+        "file": "openzeppelin-solidity/contracts/math/SafeMath.sol",
+        "id": 1121,
+        "nodeType": "ImportDirective",
+        "scope": 1176,
+        "sourceUnit": 1330,
+        "src": "26:59:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/kostya/IdeaProjects/Peloton-SmartContracts/contracts/interfaces/AllowedAddresses.sol",
+        "file": "./AllowedAddresses.sol",
+        "id": 1122,
+        "nodeType": "ImportDirective",
+        "scope": 1176,
+        "sourceUnit": 1119,
+        "src": "86:32:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1123,
+              "name": "AllowedAddresses",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1118,
+              "src": "158:16:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_AllowedAddresses_$1118",
+                "typeString": "contract AllowedAddresses"
+              }
+            },
+            "id": 1124,
+            "nodeType": "InheritanceSpecifier",
+            "src": "158:16:3"
+          }
+        ],
+        "contractDependencies": [
+          1118,
+          1415
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1175,
+        "linearizedBaseContracts": [
+          1175,
+          1118,
+          1415
+        ],
+        "name": "PricingStrategyInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "id": 1127,
+            "libraryName": {
+              "contractScope": null,
+              "id": 1125,
+              "name": "SafeMath",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1329,
+              "src": "187:8:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_SafeMath_$1329",
+                "typeString": "library SafeMath"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "181:27:3",
+            "typeName": {
+              "id": 1126,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "200:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 1129,
+            "name": "oneTokenInWei",
+            "nodeType": "VariableDeclaration",
+            "scope": 1175,
+            "src": "254:28:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1128,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "254:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 1131,
+            "name": "discount",
+            "nodeType": "VariableDeclaration",
+            "scope": 1175,
+            "src": "327:23:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1130,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "327:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1137,
+            "name": "TokenPriceInWeiUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1133,
+                  "indexed": false,
+                  "name": "_updatedFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1137,
+                  "src": "387:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1132,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "387:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1135,
+                  "indexed": false,
+                  "name": "_oneTokenInWei",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1137,
+                  "src": "409:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1134,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "409:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "386:46:3"
+            },
+            "src": "358:75:3"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1143,
+            "name": "TokenDiscountUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1142,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1139,
+                  "indexed": false,
+                  "name": "_updatedFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1143,
+                  "src": "465:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1138,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "465:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1141,
+                  "indexed": false,
+                  "name": "_discount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1143,
+                  "src": "487:17:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1140,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "487:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "464:41:3"
+            },
+            "src": "438:68:3"
+          },
+          {
+            "body": {
+              "id": 1150,
+              "nodeType": "Block",
+              "src": "568:28:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 1148,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "585:4:3",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 1147,
+                  "id": 1149,
+                  "nodeType": "Return",
+                  "src": "578:11:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1151,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "isPricingStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1144,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:2:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1147,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1146,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1151,
+                  "src": "562:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1145,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "562:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "561:6:3"
+            },
+            "scope": 1175,
+            "src": "512:84:3",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculate tokens amount for ether sent according to oneTokenInWei value\n@param _value Count of ether sent.\n@param _decimals Decimals of the token",
+            "id": 1160,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "calculatePrice",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1156,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1153,
+                  "name": "_value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "814:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1152,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "814:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1155,
+                  "name": "_decimals",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "830:17:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1154,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "830:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "813:35:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1159,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1158,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "870:7:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1157,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "870:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "869:9:3"
+            },
+            "scope": 1175,
+            "src": "790:89:3",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update token price in wei\n@param _oneTokenInWei New price",
+            "id": 1167,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setTokenPriceInWei",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1163,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1162,
+                  "name": "_oneTokenInWei",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1167,
+                  "src": "1007:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1161,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1007:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1006:24:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1166,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1165,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1167,
+                  "src": "1047:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1164,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1047:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1046:6:3"
+            },
+            "scope": 1175,
+            "src": "979:74:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update current discount percentage\n@param _discountPercents New discount in percents",
+            "id": 1174,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setTokenDiscount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1170,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1169,
+                  "name": "_discountPercents",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1174,
+                  "src": "1205:25:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1168,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1205:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1204:27:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1173,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1172,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1174,
+                  "src": "1248:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1171,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1248:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1247:6:3"
+            },
+            "scope": 1175,
+            "src": "1179:75:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1176,
+        "src": "121:1135:3"
+      }
+    ],
+    "src": "0:1257:3"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/kostya/IdeaProjects/Peloton-SmartContracts/contracts/interfaces/PricingStrategyInterface.sol",
+    "exportedSymbols": {
+      "PricingStrategyInterface": [
+        1175
+      ]
+    },
+    "id": 1176,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1120,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:3"
+      },
+      {
+        "absolutePath": "openzeppelin-solidity/contracts/math/SafeMath.sol",
+        "file": "openzeppelin-solidity/contracts/math/SafeMath.sol",
+        "id": 1121,
+        "nodeType": "ImportDirective",
+        "scope": 1176,
+        "sourceUnit": 1330,
+        "src": "26:59:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/kostya/IdeaProjects/Peloton-SmartContracts/contracts/interfaces/AllowedAddresses.sol",
+        "file": "./AllowedAddresses.sol",
+        "id": 1122,
+        "nodeType": "ImportDirective",
+        "scope": 1176,
+        "sourceUnit": 1119,
+        "src": "86:32:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 1123,
+              "name": "AllowedAddresses",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1118,
+              "src": "158:16:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_AllowedAddresses_$1118",
+                "typeString": "contract AllowedAddresses"
+              }
+            },
+            "id": 1124,
+            "nodeType": "InheritanceSpecifier",
+            "src": "158:16:3"
+          }
+        ],
+        "contractDependencies": [
+          1118,
+          1415
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 1175,
+        "linearizedBaseContracts": [
+          1175,
+          1118,
+          1415
+        ],
+        "name": "PricingStrategyInterface",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "id": 1127,
+            "libraryName": {
+              "contractScope": null,
+              "id": 1125,
+              "name": "SafeMath",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 1329,
+              "src": "187:8:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_SafeMath_$1329",
+                "typeString": "library SafeMath"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "181:27:3",
+            "typeName": {
+              "id": 1126,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "200:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 1129,
+            "name": "oneTokenInWei",
+            "nodeType": "VariableDeclaration",
+            "scope": 1175,
+            "src": "254:28:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1128,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "254:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 1131,
+            "name": "discount",
+            "nodeType": "VariableDeclaration",
+            "scope": 1175,
+            "src": "327:23:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 1130,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "327:7:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1137,
+            "name": "TokenPriceInWeiUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1133,
+                  "indexed": false,
+                  "name": "_updatedFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1137,
+                  "src": "387:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1132,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "387:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1135,
+                  "indexed": false,
+                  "name": "_oneTokenInWei",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1137,
+                  "src": "409:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1134,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "409:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "386:46:3"
+            },
+            "src": "358:75:3"
+          },
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 1143,
+            "name": "TokenDiscountUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 1142,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1139,
+                  "indexed": false,
+                  "name": "_updatedFrom",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1143,
+                  "src": "465:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 1138,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "465:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1141,
+                  "indexed": false,
+                  "name": "_discount",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1143,
+                  "src": "487:17:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1140,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "487:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "464:41:3"
+            },
+            "src": "438:68:3"
+          },
+          {
+            "body": {
+              "id": 1150,
+              "nodeType": "Block",
+              "src": "568:28:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 1148,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "585:4:3",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 1147,
+                  "id": 1149,
+                  "nodeType": "Return",
+                  "src": "578:11:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 1151,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "isPricingStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1144,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "538:2:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1147,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1146,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1151,
+                  "src": "562:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1145,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "562:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "561:6:3"
+            },
+            "scope": 1175,
+            "src": "512:84:3",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Calculate tokens amount for ether sent according to oneTokenInWei value\n@param _value Count of ether sent.\n@param _decimals Decimals of the token",
+            "id": 1160,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "calculatePrice",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1156,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1153,
+                  "name": "_value",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "814:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1152,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "814:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1155,
+                  "name": "_decimals",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "830:17:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1154,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "830:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "813:35:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1159,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1158,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1160,
+                  "src": "870:7:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1157,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "870:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "869:9:3"
+            },
+            "scope": 1175,
+            "src": "790:89:3",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update token price in wei\n@param _oneTokenInWei New price",
+            "id": 1167,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setTokenPriceInWei",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1163,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1162,
+                  "name": "_oneTokenInWei",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1167,
+                  "src": "1007:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1161,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1007:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1006:24:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1166,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1165,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1167,
+                  "src": "1047:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1164,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1047:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1046:6:3"
+            },
+            "scope": 1175,
+            "src": "979:74:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update current discount percentage\n@param _discountPercents New discount in percents",
+            "id": 1174,
+            "implemented": false,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "setTokenDiscount",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1170,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1169,
+                  "name": "_discountPercents",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1174,
+                  "src": "1205:25:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1168,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1205:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1204:27:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 1173,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1172,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1174,
+                  "src": "1248:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1171,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1248:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1247:6:3"
+            },
+            "scope": 1175,
+            "src": "1179:75:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1176,
+        "src": "121:1135:3"
+      }
+    ],
+    "src": "0:1257:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-10-30T13:24:50.768Z"
+}

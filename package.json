@@ -1,0 +1,24 @@
+{
+  "name": "Peloton-smart-contracts",
+  "version": "1.0.0",
+  "description": "Peloton project smart contracts",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "author": "kostya.s",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
+    "openzeppelin-solidity": "^1.11.0",
+    "truffle-hdwallet-provider": "0.0.6",
+    "truffle-hdwallet-provider-privkey": "^0.3.0",
+    "uuid-parse": "^1.0.0",
+    "web3": "^1.0.0-beta.36"
+  }
+}
