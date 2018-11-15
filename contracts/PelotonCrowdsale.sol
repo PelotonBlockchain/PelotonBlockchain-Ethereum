@@ -186,6 +186,7 @@ contract PelotonCrowdsale is AllowedAddresses {
         uint256 tokens = pricingStrategy.calculatePrice(_wei, token.decimals());
         require(tokens > 0);
 
+        tokens = tokens.add(calcBonusTokens(tokens));
         uint256 tokensLeft = currentStage.maxTokens - 0;
         require(tokensLeft >= tokens);
 
@@ -243,5 +244,18 @@ contract PelotonCrowdsale is AllowedAddresses {
         bytes memory prefix = "\x19Ethereum Signed Message:\n32";
         bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, hash));
         return ecrecover(prefixedHash, v, r, s);
+    }
+
+    function calcBonusTokens(uint256 _bought) internal returns(uint256) {
+        if (tokensSold >= 0 && tokensSold <= 1000000000 * (10 * uint256(token.decimals()))) {
+            return calcBonusPercent(_bought, 30);
+        }
+
+        return 0;
+    }
+
+    function calcBonusPercent(uint256 _bought, uint256 _percent) internal pure returns(uint256) {
+        uint256 bonus = _bought.mul(_percent).div(100);
+        return bonus;
     }
 }
